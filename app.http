@@ -1,0 +1,66 @@
+POST http://localhost:3000/users/register/
+Content-Type: application/json
+
+{
+    "username" : "john",
+    "password" : "john2021"
+}
+### Registering
+
+
+POST http://localhost:3000/login/
+Content-Type: application/json
+
+{
+    "username" : "john",
+    "password" : "john2021"
+}
+### Login
+
+
+GET http://localhost:3000/user/logged/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1haGVzaCIsImlhdCI6MTYzMDY4MjM4NX0.GYj3-5RgPsbhHA2DxEabSv8OU1RRg1SWKcHFa6NJMfg
+### Who's Logged in 
+
+
+GET http://localhost:3000/books/?rating=3.9&rating_filter=above
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1haGVzaCIsImlhdCI6MTYzMDY4MjM4NX0.GYj3-5RgPsbhHA2DxEabSv8OU1RRg1SWKcHFa6NJMfg
+### GET Books 
+
+
+
+
+GET http://localhost:3000/cart/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1haGVzaCIsImlhdCI6MTYzMDY4MjM4NX0.GYj3-5RgPsbhHA2DxEabSv8OU1RRg1SWKcHFa6NJMfg
+### Cart Items
+
+
+
+POST http://localhost:3000/cart/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1haGVzaCIsImlhdCI6MTYzMDY4MjM4NX0.GYj3-5RgPsbhHA2DxEabSv8OU1RRg1SWKcHFa6NJMfg
+Content-Type: application/json 
+
+{
+    "book_id" : 6,
+    "quantity" : 2
+}
+
+### Adding Item To Cart
+
+
+
+
+PUT http://localhost:3000/cart/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1haGVzaCIsImlhdCI6MTYzMDY4MjM4NX0.GYj3-5RgPsbhHA2DxEabSv8OU1RRg1SWKcHFa6NJMfg
+Content-Type: application/json 
+
+{
+    "book_id" : 6,
+    "quantity" : 2
+}
+### Update Cart Item 
+
+
+DELETE http://localhost:3000/cart/6
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1haGVzaCIsImlhdCI6MTYzMDY4MjM4NX0.GYj3-5RgPsbhHA2DxEabSv8OU1RRg1SWKcHFa6NJMfg 
+### Deleting Cart Item
