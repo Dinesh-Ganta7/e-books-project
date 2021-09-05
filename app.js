@@ -4,6 +4,9 @@ const sqlite3 = require("sqlite3");
 const path = require("path");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const format = require("date-fns/format");
+const isValid = require("date-fns/isValid");
+
 const app = express();
 app.use(express.json());
 const dbPath = path.join(__dirname, "./eBooks.db");
@@ -93,7 +96,7 @@ app.post("/login/", async (request, response) => {
 
 //REGISTER USER API
 app.post("/users/register/", async (request, response) => {
-  const { username, password } = request.body;
+  const { username, password, is_admin } = request.body;
   const getUserQuery = `
         SELECT
         *
@@ -108,9 +111,9 @@ app.post("/users/register/", async (request, response) => {
     const addUserQuery = `
         INSERT
         INTO
-        user(username,password)
+        user(username,password, is_admin)
         VALUES(
-             '${username}', '${hashedPassword}'
+             '${username}', '${hashedPassword}', ${is_admin}
         );`;
     await db.run(addUserQuery);
 
@@ -134,8 +137,8 @@ app.post("/users/register/", async (request, response) => {
 
 //SEE WHO IS LOGIN API
 app.get("/user/logged/", authenticateJWTToken, async (request, response) => {
-  const { username } = request;
-  response.send(username);
+  const { username, userId } = request;
+  response.send({ username, user_id: userId });
 });
 
 // GET BOOKS API
@@ -146,6 +149,7 @@ app.get("/books/", authenticateJWTToken, async (request, response) => {
     price_filter,
     rating,
     rating_filter,
+    order = "ASC",
   } = request.query;
 
   let getBooksQuery;
@@ -170,7 +174,8 @@ app.get("/books/", authenticateJWTToken, async (request, response) => {
             FROM
             book
             WHERE
-            ${filterResultsByPrice} and ${filterResultsByRating} and book_title LIKE '%${search_q}%'`;
+            ${filterResultsByPrice} and ${filterResultsByRating} and book_title LIKE '%${search_q}%'
+            ORDER BY price ${order} , rating ${order}`;
   } else if (rating !== undefined && rating_filter !== undefined) {
     const filterResultsByRating =
       rating_filter === "below" ? `rating < ${rating}` : `rating > ${rating}`;
@@ -180,7 +185,8 @@ app.get("/books/", authenticateJWTToken, async (request, response) => {
             FROM
             book
             WHERE
-            ${filterResultsByRating} and book_title LIKE '%${search_q}%'`;
+            ${filterResultsByRating} and book_title LIKE '%${search_q}%'
+            ORDER BY rating ${order}`;
   } else if (price_range !== undefined && price_filter !== undefined) {
     const filterResultsByPrice =
       price_filter === "below"
@@ -192,7 +198,8 @@ app.get("/books/", authenticateJWTToken, async (request, response) => {
         FROM
         book
         WHERE
-        ${filterResultsByPrice} and book_title LIKE '%${search_q}%'`;
+        ${filterResultsByPrice} and book_title LIKE '%${search_q}%'
+        ORDER BY price ${order}`;
   } else {
     getBooksQuery = `
         SELECT
@@ -200,14 +207,14 @@ app.get("/books/", authenticateJWTToken, async (request, response) => {
         FROM
         book
         WHERE
-        book_title LIKE '%${search_q}%'`;
+        book_title LIKE '%${search_q}%'
+        ORDER BY book_id ${order}, book_title ${order}`;
   }
   const books = await db.all(getBooksQuery);
   response.send(books);
 });
 
 //GET Cart Details API
-
 app.get("/cart/", authenticateJWTToken, async (request, response) => {
   const { username, userId, cartId } = request;
 
@@ -237,8 +244,50 @@ app.get("/cart/", authenticateJWTToken, async (request, response) => {
   }
 });
 
-// ADD BOOKS TO CART API
+//GET Book API
+app.get("/book/:bookId", authenticateJWTToken, async (request, response) => {
+  const { bookId } = request.params;
+  const getBookQuery = `
+            SELECT
+            *
+            FROM
+            book
+            WHERE
+            book_id = ${bookId};`;
+  const book = await db.get(getBookQuery);
+  if (book === undefined) {
+    response.status(400);
+    response.send("Invalid Book Id");
+  } else {
+    response.send(book);
+  }
+});
 
+//SHARE BOOK  API
+app.get(
+  "/book/share/:bookId/",
+  authenticateJWTToken,
+  async (request, response) => {
+    const { bookId } = request.params;
+    const url = `https://ccbp.in/book/share/${bookId}/`;
+    const getBookQuery = `
+            SELECT
+            *
+            FROM
+            book
+            WHERE
+            book_id = ${bookId};`;
+    const book = await db.get(getBookQuery);
+    if (book === undefined) {
+      response.status(400);
+      response.send("Invalid Book Id");
+    } else {
+      response.send({ url, book });
+    }
+  }
+);
+
+// ADD BOOKS TO CART API
 app.post("/cart/", authenticateJWTToken, async (request, response) => {
   const { username, userId, cartId } = request;
   const { book_id, quantity } = request.body;
@@ -324,7 +373,6 @@ app.put("/cart/", authenticateJWTToken, async (request, response) => {
 });
 
 // DELETE ITEM FROM CART API
-
 app.delete("/cart/:bookId", authenticateJWTToken, async (request, response) => {
   const { username, userId, cartId } = request;
   const { bookId } = request.params;
@@ -362,5 +410,146 @@ app.delete("/cart/:bookId", authenticateJWTToken, async (request, response) => {
   } else {
     response.status(400);
     response.send("This Item Is Not In The Cart !!");
+  }
+});
+
+// getting cart amount and date func
+const getCartAmountAndDate = async (userId, cartId) => {
+  const date = new Date();
+  const formattedDate = format(date, "yyyy-LL-dd hh:mm:ss a");
+  let amountInCart = await db.get(
+    `SELECT total_price from cart where id = ${cartId};`
+  );
+  amountInCart = amountInCart.total_price;
+  return { formattedDate, amountInCart };
+};
+
+//getting cart items func
+const getCartItems = async (cartId) => {
+  const cartItems = await db.all(
+    `SELECT book_id, quantity FROM cart_book WHERE cart_id = ${cartId};`
+  );
+  return cartItems;
+};
+
+//PLACE ORDER API
+app.post("/order/", authenticateJWTToken, async (request, response) => {
+  const { username, userId, cartId } = request;
+  const { formattedDate, amountInCart } = await getCartAmountAndDate(
+    userId,
+    cartId
+  );
+  if (amountInCart === 0) {
+    response.status(400);
+    response.send(
+      "Your cart is empty, add items to the cart to place an order"
+    );
+  } else {
+    await db.run(`INSERT INTO order_details(user_id,total,created_at) VALUES(${userId} , ${amountInCart},
+        '${formattedDate}');`);
+
+    let orderId = await db.get(
+      `SELECT id FROM order_details WHERE created_at = '${formattedDate}'`
+    );
+    orderId = orderId.id;
+
+    const cartItems = await getCartItems(cartId);
+
+    cartItems.forEach(async (eachItem) => {
+      const { book_id, quantity } = eachItem;
+      await db.run(
+        `INSERT INTO order_items(order_id, book_id, quantity) VALUES(${orderId}, ${book_id}, ${quantity});`
+      );
+    });
+
+    // clearing the cart after placing order
+    await db.run(`UPDATE CART SET total_price = 0 WHERE id = ${cartId}`);
+    await db.run(`delete from cart_book`);
+    response.send("Order Successfully Placed :)");
+  }
+});
+
+// Show Orders API
+app.get("/orders/", authenticateJWTToken, async (request, response) => {
+  const { userId, username } = request;
+  const { order = "ASC" } = request.query;
+
+  const getOrdersQuery = `
+            SELECT
+            *
+            FROM
+            order_details
+            WHERE
+            user_id = ${userId}
+            ORDER BY created_at ${order}`;
+  const orders = await db.all(getOrdersQuery);
+
+  if (orders.length === 0) {
+    response.send("You Have No Orders");
+  } else {
+    response.send(orders);
+  }
+});
+
+//Show Order Details API
+
+app.get(
+  "/orders/:orderId/details/",
+  authenticateJWTToken,
+  async (request, response) => {
+    const { userId } = request;
+    const { orderId } = request.params;
+
+    const isValidUser = await db.get(
+      `SELECT * FROM order_details WHERE user_id = ${userId}`
+    );
+
+    if (isValidUser !== undefined) {
+      const orderAmount = await db.get(
+        `SELECT total from order_details WHERE id = ${orderId}`
+      );
+
+      if (orderAmount !== undefined) {
+        const orderDetailsQuery = `
+            SELECT
+            book.book_id,book_title,quantity
+            FROM
+            order_items INNER JOIN book ON book.book_id = order_items.book_id
+            WHERE
+            order_items.order_id = ${orderId}
+            `;
+        const items = await db.all(orderDetailsQuery);
+        response.send({ order_amount: "₹" + orderAmount.total, items });
+      } else {
+        response.status(400);
+        response.send("Invalid Order Id");
+      }
+    } else {
+      response.status(400);
+      response.send("Invalid Order Id, You Have No Orders.");
+    }
+  }
+);
+
+//Add Books To DB API (Only Admin)
+app.post("/books/add/", authenticateJWTToken, async (request, response) => {
+  const { username, userId, cartId } = request;
+  const { book_title, author_name, price, rating, publisher } = request.body;
+  let isAdmin = await db.get(`SELECT is_admin FROM user WHERE id=${userId}`);
+  isAdmin = isAdmin.is_admin;
+
+  if (isAdmin === 1) {
+    const addBookToDbQuery = `
+            INSERT
+            INTO
+            book(book_title, author_name, price,rating,publisher)
+            VALUES(
+                '${book_title}', '${author_name}', ${price}, ${rating}, '${publisher}'
+            );`;
+    await db.run(addBookToDbQuery);
+    response.send("Book Added Successfully :)");
+  } else {
+    response.status(401);
+    response.send("Only Admin Can Add Books");
   }
 });

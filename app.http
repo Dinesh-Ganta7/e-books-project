@@ -2,8 +2,9 @@ POST http://localhost:3000/users/register/
 Content-Type: application/json
 
 {
-    "username" : "john",
-    "password" : "john2021"
+    "username" : "Dinesh",
+    "password" : "Dinesh2021",
+    "is_admin" : 1
 }
 ### Registering
 
@@ -12,8 +13,8 @@ POST http://localhost:3000/login/
 Content-Type: application/json
 
 {
-    "username" : "john",
-    "password" : "john2021"
+    "username" : "mahesh",
+    "password" : "mahesh2021"
 }
 ### Login
 
@@ -23,10 +24,20 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1ha
 ### Who's Logged in 
 
 
-GET http://localhost:3000/books/?rating=3.9&rating_filter=above
+GET http://localhost:3000/books/?order=DESC
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1haGVzaCIsImlhdCI6MTYzMDY4MjM4NX0.GYj3-5RgPsbhHA2DxEabSv8OU1RRg1SWKcHFa6NJMfg
 ### GET Books 
 
+
+GET http://localhost:3000/book/5/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1haGVzaCIsImlhdCI6MTYzMDY4MjM4NX0.GYj3-5RgPsbhHA2DxEabSv8OU1RRg1SWKcHFa6NJMfg
+### GET BOOK
+
+
+
+GET http://localhost:3000/book/share/25/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1haGVzaCIsImlhdCI6MTYzMDY4MjM4NX0.GYj3-5RgPsbhHA2DxEabSv8OU1RRg1SWKcHFa6NJMfg
+### Share Book
 
 
 
@@ -41,10 +52,9 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1ha
 Content-Type: application/json 
 
 {
-    "book_id" : 6,
-    "quantity" : 2
+    "book_id" : 3,
+    "quantity" : 3
 }
-
 ### Adding Item To Cart
 
 
@@ -55,12 +65,44 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1ha
 Content-Type: application/json 
 
 {
-    "book_id" : 6,
-    "quantity" : 2
+    "book_id" : 7,
+    "quantity" : 4
 }
 ### Update Cart Item 
 
 
-DELETE http://localhost:3000/cart/6
+DELETE http://localhost:3000/cart/1
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1haGVzaCIsImlhdCI6MTYzMDY4MjM4NX0.GYj3-5RgPsbhHA2DxEabSv8OU1RRg1SWKcHFa6NJMfg 
 ### Deleting Cart Item
+
+
+
+POST http://localhost:3000/order/ 
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1haGVzaCIsImlhdCI6MTYzMDY4MjM4NX0.GYj3-5RgPsbhHA2DxEabSv8OU1RRg1SWKcHFa6NJMfg 
+### Creating Order
+
+
+
+GET http://localhost:3000/orders/?order=ASC
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1haGVzaCIsImlhdCI6MTYzMDc2NzczM30.PFxRKflAzWSuw1VwaqBe27j3SSNnHiopNpi2fAmGExc
+### Show Orders
+
+
+GET http://localhost:3000/orders/18/details/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1haGVzaCIsImlhdCI6MTYzMDc2NzczM30.PFxRKflAzWSuw1VwaqBe27j3SSNnHiopNpi2fAmGExc
+### Order Details
+
+
+POST http://localhost:3000/books/add/
+Content-Type:  application/json 
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1haGVzaCIsImlhdCI6MTYzMDc2NzczM30.PFxRKflAzWSuw1VwaqBe27j3SSNnHiopNpi2fAmGExc
+
+{
+    "book_title" : "Great Jones Street",
+    "author_name" : "Don DeLillo",
+    "price" : 450,
+    "rating" : 3.48,
+    "publisher" : "Penguin Books"
+
+}
+//Admin Add Book
