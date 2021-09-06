@@ -13,8 +13,8 @@ POST http://localhost:3000/login/
 Content-Type: application/json
 
 {
-    "username" : "mahesh",
-    "password" : "mahesh2021"
+    "username" : "Dinesh",
+    "password" : "Dinesh2021"
 }
 ### Login
 
@@ -29,7 +29,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1ha
 ### GET Books 
 
 
-GET http://localhost:3000/book/5/
+GET http://localhost:3000/book/7/
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1haGVzaCIsImlhdCI6MTYzMDY4MjM4NX0.GYj3-5RgPsbhHA2DxEabSv8OU1RRg1SWKcHFa6NJMfg
 ### GET BOOK
 
@@ -53,7 +53,7 @@ Content-Type: application/json
 
 {
     "book_id" : 3,
-    "quantity" : 3
+    "quantity" : 4
 }
 ### Adding Item To Cart
 
@@ -65,8 +65,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1ha
 Content-Type: application/json 
 
 {
-    "book_id" : 7,
-    "quantity" : 4
+    "book_id" : 3,
+    "quantity" : 3
 }
 ### Update Cart Item 
 
@@ -84,11 +84,11 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1ha
 
 
 GET http://localhost:3000/orders/?order=ASC
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1haGVzaCIsImlhdCI6MTYzMDc2NzczM30.PFxRKflAzWSuw1VwaqBe27j3SSNnHiopNpi2fAmGExc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1haGVzaCIsImlhdCI6MTYzMDY4MjM4NX0.GYj3-5RgPsbhHA2DxEabSv8OU1RRg1SWKcHFa6NJMfg 
 ### Show Orders
 
 
-GET http://localhost:3000/orders/18/details/
+GET http://localhost:3000/orders/17/details/
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1haGVzaCIsImlhdCI6MTYzMDc2NzczM30.PFxRKflAzWSuw1VwaqBe27j3SSNnHiopNpi2fAmGExc
 ### Order Details
 

@@ -240,6 +240,7 @@ app.get("/cart/", authenticateJWTToken, async (request, response) => {
       total_price: "₹ " + total_price.total_price,
     });
   } else {
+    response.status(400);
     response.send("Your Cart Is Empty !!");
   }
 });
@@ -297,9 +298,9 @@ app.post("/cart/", authenticateJWTToken, async (request, response) => {
   );
 
   if (isItemInCart === undefined) {
-    if (quantity < 1) {
+    if (quantity < 1 || quantity > 5) {
       response.status(400);
-      response.send("Minimum Quantity Should Be 1 !!");
+      response.send("Please select a valid quantity between 1 and 5");
     } else {
       let bookPrice = await db.get(
         `SELECT price FROM book WHERE book_id = ${book_id}`
@@ -338,9 +339,9 @@ app.put("/cart/", authenticateJWTToken, async (request, response) => {
   );
 
   if (isItemInCart !== undefined) {
-    if (quantity < 1) {
+    if (quantity < 1 || quantity > 5) {
       response.status(400);
-      response.send("Minimum Quantity Should Be 1 !!");
+      response.send("Please select a valid quantity between 1 and 5");
     } else {
       let previousTotalPrice = await db.get(`
         SELECT total_price FROM cart WHERE id = ${cartId}`);
