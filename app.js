@@ -270,7 +270,6 @@ app.get(
   authenticateJWTToken,
   async (request, response) => {
     const { bookId } = request.params;
-    const url = `https://ccbp.in/book/share/${bookId}/`;
     const getBookQuery = `
             SELECT
             *
@@ -283,7 +282,7 @@ app.get(
       response.status(400);
       response.send("Invalid Book Id");
     } else {
-      response.send({ url, book });
+      response.send(book);
     }
   }
 );
