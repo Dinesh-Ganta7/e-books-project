@@ -13,14 +13,14 @@ POST http://localhost:3000/login/
 Content-Type: application/json
 
 {
-    "username" : "Dinesh",
-    "password" : "Dinesh2021"
+    "username" : "mahesh",
+    "password" : "mahesh2021"
 }
 ### Login
 
 
 GET http://localhost:3000/user/logged/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1haGVzaCIsImlhdCI6MTYzMDY4MjM4NX0.GYj3-5RgPsbhHA2DxEabSv8OU1RRg1SWKcHFa6NJMfg
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1haGVzaCIsImlhdCI6MTYzMTAwOTMyN30.RtvUXtoLFD-0PdxVV9Lr56Io82D__u3UjbQvFgPuRKg
 ### Who's Logged in 
 
 
@@ -89,20 +89,26 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1ha
 
 
 GET http://localhost:3000/orders/17/details/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1haGVzaCIsImlhdCI6MTYzMDc2NzczM30.PFxRKflAzWSuw1VwaqBe27j3SSNnHiopNpi2fAmGExc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1haGVzaCIsImlhdCI6MTYzMDY4MjM4NX0.GYj3-5RgPsbhHA2DxEabSv8OU1RRg1SWKcHFa6NJMfg 
 ### Order Details
 
 
 POST http://localhost:3000/books/add/
 Content-Type:  application/json 
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1haGVzaCIsImlhdCI6MTYzMDc2NzczM30.PFxRKflAzWSuw1VwaqBe27j3SSNnHiopNpi2fAmGExc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1haGVzaCIsImlhdCI6MTYzMTAwOTMyN30.RtvUXtoLFD-0PdxVV9Lr56Io82D__u3UjbQvFgPuRKg
+
 
 {
-    "book_title" : "Great Jones Street",
-    "author_name" : "Don DeLillo",
-    "price" : 450,
-    "rating" : 3.48,
-    "publisher" : "Penguin Books"
+    "book_title" : "The Giver",
+    "author_name" : "Lois Lowry",
+    "price" : 1250,
+    "rating" : 4.13,
+    "publisher" : "Ember"
 
 }
-//Admin Add Book
+### Admin Add Book 
+
+
+DELETE http://localhost:3000/books/delete/31
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1haGVzaCIsImlhdCI6MTYzMTAwOTMyN30.RtvUXtoLFD-0PdxVV9Lr56Io82D__u3UjbQvFgPuRKg
+### Admin DELETE Book

@@ -75,7 +75,7 @@ const isAdminOrNot = async (request, response, next) => {
     next();
   } else {
     response.status(401);
-    response.send("Only Admin Can Add Books");
+    response.send("Only Admin can add and remove books !!");
   }
 };
 
@@ -553,8 +553,6 @@ app.post(
   async (request, response) => {
     const { username, userId, cartId } = request;
     const { book_title, author_name, price, rating, publisher } = request.body;
-    let isAdmin = await db.get(`SELECT is_admin FROM user WHERE id=${userId}`);
-    isAdmin = isAdmin.is_admin;
 
     const addBookToDbQuery = `
             INSERT
@@ -565,5 +563,31 @@ app.post(
             );`;
     await db.run(addBookToDbQuery);
     response.send("Book Added Successfully :)");
+  }
+);
+
+//REMOVE BOOKS API(Only Admin)
+app.delete(
+  "/books/delete/:bookId",
+  authenticateJWTToken,
+  isAdminOrNot,
+  async (request, response) => {
+    const { bookId } = request.params;
+    const dbBook = await db.get(
+      `SELECT * FROM book where book_id = ${bookId};`
+    );
+    if (dbBook === undefined) {
+      response.send("Invalid Book Id");
+    } else {
+      const deleteBookQuery = `
+        DELETE 
+        FROM
+        book
+        WHERE
+        book_id = ${bookId};`;
+
+      await db.run(deleteBookQuery);
+      response.send("Book Deleted Successfully !");
+    }
   }
 );
