@@ -29,6 +29,7 @@ const initializeDBAndServer = async () => {
 
 initializeDBAndServer();
 
+//Authenticate JWT TOKEN MiddleWare
 const authenticateJWTToken = async (request, response, next) => {
   let jwtToken = null;
   const authHeaders = request.headers["authorization"];
@@ -62,6 +63,19 @@ const authenticateJWTToken = async (request, response, next) => {
         next();
       }
     });
+  }
+};
+
+const isAdminOrNot = async (request, response, next) => {
+  const { userId } = request;
+  let isAdmin = await db.get(`SELECT is_admin FROM user WHERE id=${userId}`);
+  isAdmin = isAdmin.is_admin;
+
+  if (isAdmin === 1) {
+    next();
+  } else {
+    response.status(401);
+    response.send("Only Admin Can Add Books");
   }
 };
 
@@ -532,13 +546,16 @@ app.get(
 );
 
 //Add Books To DB API (Only Admin)
-app.post("/books/add/", authenticateJWTToken, async (request, response) => {
-  const { username, userId, cartId } = request;
-  const { book_title, author_name, price, rating, publisher } = request.body;
-  let isAdmin = await db.get(`SELECT is_admin FROM user WHERE id=${userId}`);
-  isAdmin = isAdmin.is_admin;
+app.post(
+  "/books/add/",
+  authenticateJWTToken,
+  isAdminOrNot,
+  async (request, response) => {
+    const { username, userId, cartId } = request;
+    const { book_title, author_name, price, rating, publisher } = request.body;
+    let isAdmin = await db.get(`SELECT is_admin FROM user WHERE id=${userId}`);
+    isAdmin = isAdmin.is_admin;
 
-  if (isAdmin === 1) {
     const addBookToDbQuery = `
             INSERT
             INTO
@@ -548,8 +565,5 @@ app.post("/books/add/", authenticateJWTToken, async (request, response) => {
             );`;
     await db.run(addBookToDbQuery);
     response.send("Book Added Successfully :)");
-  } else {
-    response.status(401);
-    response.send("Only Admin Can Add Books");
   }
-});
+);

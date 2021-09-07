@@ -83,7 +83,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1ha
 
 
 
-GET http://localhost:3000/orders/?order=ASC
+GET http://localhost:3000/orders/?order=DESC
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1haGVzaCIsImlhdCI6MTYzMDY4MjM4NX0.GYj3-5RgPsbhHA2DxEabSv8OU1RRg1SWKcHFa6NJMfg 
 ### Show Orders
 
