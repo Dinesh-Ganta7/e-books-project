@@ -577,6 +577,7 @@ app.delete(
       `SELECT * FROM book where book_id = ${bookId};`
     );
     if (dbBook === undefined) {
+      response.status(400);
       response.send("Invalid Book Id");
     } else {
       const deleteBookQuery = `
